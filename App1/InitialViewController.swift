@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
+import SwiftyJSON
 
 class InitialViewController: UIViewController {
     
@@ -42,70 +43,66 @@ class InitialViewController: UIViewController {
             return
         }
         
-        if(newBot(name: name!)){
-         //Go to main page, assign token value and save on
-         //device. Also make the bool value true
-        }
+        newBot(name: name!)
+         
     }
     
-    func newBot(name: String) -> Bool{
+    func newBot(name: String){
         let json: Parameters = [
             "name": "\(name)"
         ]
         
-        var success = false;
+        print("\(mainURL)/new")
         
-        Alamofire.request("http://192.168.1.2:8080/App1/new", method: .post, parameters: json, encoding: JSONEncoding.default).responseJSON { response in
+        Alamofire.request("\(mainURL)/new", method: .post, parameters: json, encoding: JSONEncoding.default).responseJSON { response in
             if let json = response.result.value {
                 print("JSON: \(json)") // serialized json response
             }
             
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+            if let data = response.data {
+                var statusCode = response.response?.statusCode
                 
-              let json = try? JSONSerialization.jsonObject(with: data, options: [])
+                print("Status code: \(statusCode)")
                 
-             if let dictionary = json as? [String: Any] {
-                if let token = dictionary["token"] as? String {
-                    // access individual value in dictionary
+                if(statusCode == 401){
+                    self.errorLabel.text = "A user with that name already exists"
+                }
+                else if(statusCode == 402){
+                    self.errorLabel.text = "The name field is empty"
+                }
+                else if(statusCode == 200){
+                //Success
+                do{
+                    let responseJSON = try JSON(data: data)
+                    let token = responseJSON["token"].stringValue
+                    
                     print(token)
+
+                    self.defaults.set(name, forKey: usernameKey)
                     self.defaults.set(token, forKey: tokenKey)
                     self.defaults.set(true, forKey: firstStartKey)
-                    success = true
+                    
+                    username = name
+                    
+                    print("Successfully created new user")
+                    
+                    //Go to main page, assign token value and save on
+                    //device. Also make the bool value true
+                    
+                    self.performSegue(withIdentifier: "initialToMain", sender: nil)
+                    
+                    self.errorLabel.textColor = UIColor.green
+                    self.errorLabel.text = "Success"
+                    
+                }
+                catch{
+                    print("BAD RESPONSE")
+                    }
+                }
+                else{
+                    print("Unkown response code. Might be an internal error on server")
                 }
             }
-             else{
-                print("ERROR CAUGHT")
-                success = false
-            }
-                
-                print("Data: \(utf8Text)") // original server data as UTF8 string
-            }
-        }
-        
-        return success
-    }
-    
-    func Get(){
-        
-        let parameters: Parameters = [
-            "name": "APPIE",
-            "token" : "<,rFl^?W24KVi,"
-        ]
-        
-        // Both calls are equivalent
-        Alamofire.request("\(mainURL)/App1/start", method: .post, parameters: parameters, encoding: JSONEncoding.default).responseJSON { response in
-            //print("Request: \(String(describing: response.request))")   // original url request
-            print("Response: \(String(describing: response.response))") // http url response
-          //  print("Result: \(response.result)")                         // response serialization result
-            
-            if let json = response.result.value {
-                print("JSON: \(json)") // serialized json response
-            }
-            
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)") // original server data as UTF8 string
-            }
         }
     }
-    
 }

@@ -10,14 +10,17 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 
-let tempToken = "<,rFl^?W24KVi,"
-let tempScore = 9
-
 let tokenKey = "token"
 let firstStartKey = "hasStarted"
 let highscoreKey = "highscore"
+let usernameKey = "username"
 
-let mainURL = "http://192.168.1.2:8080/"
+let mainURL = "http://glennolsson.se/App1/api"
+
+var score = 0
+var username: String = ""
+
+let defaults = UserDefaults.standard
 
 func newBot(name: String) -> Bool{
     
@@ -57,11 +60,33 @@ func updateHighscoreRequest(){
  */
 
 func newStart(){
+    
+    if let token = defaults.string(forKey: tokenKey){
+    
     let json: Parameters = [
-        "token": "\(String(describing: tempToken))"
+        "token": "\(String(describing: token))"
     ]
     
-    Alamofire.request("\(mainURL)App1/start", method: .post, parameters: json, encoding: JSONEncoding.default).responseJSON { response in
-       print("New Start")
+    Alamofire.request("\(mainURL)/start", method: .post, parameters: json, encoding: JSONEncoding.default).responseJSON { response in
+        if let data = response.data{
+            
+            let statusCode = response.response?.statusCode
+            
+            print("Status code: \(statusCode)")
+            
+            if(statusCode == 401){
+                print("No user with that token exists")
+            }
+            else if(statusCode == 402){
+                print("Token was none")
+            }
+            else if(statusCode == 200){
+                print("New Start")
+            }
+            else{
+                print("Unkown response code. Might be an internal error on server")
+            }
+        }
+    }
     }
 }

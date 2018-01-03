@@ -28,9 +28,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             viewController.updateGameLabel()
         }
         else{
+            print("NOT ON MAIN AT RESIGN")
             //Not on main storyboard
-            let highscoreController = window?.rootViewController as! HighscoreViewController
+            if let highscoreController = window?.rootViewController as? HighscoreViewController{
             highscoreController.updateHighscoreRequest()
+            }
         }
         
         newStart()

@@ -25,13 +25,24 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {        
         super.viewDidLoad()
+        
+        
         // Do any additional setup after loading the view, typically from a nib.
         let lasthigh = defaults.integer(forKey: highscoreKey)
         let hasStarted = defaults.bool(forKey: firstStartKey)
+        let token = defaults.string(forKey: tokenKey)
+        
+        if let testUsername = defaults.string(forKey: usernameKey){
+            //Otherwise doesn't exist
+            username = testUsername
+        }
+        
+        print("Token: \(token)")
         
         if(!hasStarted){
             //First launch, must choose a nickname
             print("FIRST LAUNCH")
+            
             performSegue(withIdentifier: "startSegue", sender: nil)
         }
         
@@ -45,6 +56,7 @@ class ViewController: UIViewController {
         }
         updateGameLabel()
         updateHighScoreLabel(currentHighScore)
+        newStart()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -69,6 +81,7 @@ class ViewController: UIViewController {
     func actionPressed(){
         print("Tapped")
         currentPressCount+=1
+        score = currentPressCount
         updateGameLabel()
         if currentPressCount > currentHighScore{
             updateHighScoreLabel(currentPressCount)
