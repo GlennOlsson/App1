@@ -16,8 +16,6 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
     let defaults = UserDefaults.standard
 	
     @IBOutlet weak var highscoreLabelStack: UIStackView!
-    
-	@IBOutlet weak var selfHighLabel: UILabel!
 	
 	func applicationWillResignActive(_ application: UIApplication) {
         print("RESIGN ACTIVE")
@@ -93,8 +91,7 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
             }
         }
         
-    }
-    
+	}
     }
 	func updateHighscore(highscoreObject: JSON){
 		
@@ -117,7 +114,7 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
 			//Creating two new labels for the name and score, then adding them to a new
 			//stack, which will then be added to the root stack
 			
-			let newStack = createStackAndLabels(name: name, score: score, highSpot: i+1, isThisUser: (i+1)==thisUserSpot)
+			let newStack = createStackAndLabels(name: name, score: score, highSpot: i+1, isThisUser: i == thisUserSpot)
 			
 			highscoreLabelStack.addArrangedSubview(newStack)
 			
@@ -136,6 +133,14 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
 			//            self.view.addConstraint(constraintHeight)
 			
 		}
+		if thisUserSpot > 9{
+			//Not on top 10
+			
+			let newStack = createStackAndLabels(name: username, score: defaults.integer(forKey: highscoreKey), highSpot: thisUserSpot + 1, isThisUser: true)
+			
+			highscoreLabelStack.addArrangedSubview(newStack)
+			highscoreLabelStack.translatesAutoresizingMaskIntoConstraints = false
+		}
 	}
 	
 	func createStackAndLabels(name: String, score: Int, highSpot: Int, isThisUser: Bool) -> UIStackView{
@@ -153,15 +158,12 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
 		let scoreLabel = UILabel()
 		scoreLabel.text = String(score)
 		
-		if(highSpot > 10){
-			//Not on top 10, this is user's highscore spot, which could be anything > 10
-			nameLabel.toggleBoldface(nil)
-			nameLabel.font = UIFont(descriptor: UIFontDescriptor(), size: 16)
-			
-			scoreLabel.toggleBoldface(nil)
-			scoreLabel.font = UIFont(descriptor: UIFontDescriptor(), size: 16)
+		if(isThisUser){
+			print("isthisuser!!")
+				//This user is on top 10, marking that
+				nameLabel.font = UIFont.boldSystemFont(ofSize: 18.0)
+				scoreLabel.font = UIFont.boldSystemFont(ofSize: 18.0)
 		}
-		
 		
 		stack.addArrangedSubview(nameLabel)
 		stack.addArrangedSubview(scoreLabel)

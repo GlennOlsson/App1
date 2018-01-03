@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import UIKit
 import SwiftyJSON
 
 let tokenKey = "token"
@@ -17,10 +18,15 @@ let usernameKey = "username"
 
 let mainURL = "http://glennolsson.se/App1/api"
 
-var score = 0
 var username: String = ""
 
 let defaults = UserDefaults.standard
+
+var globalGameLabel: UILabel?
+
+var currentHighScore: Int = 1
+
+var currentPressCount = 1
 
 func newBot(name: String) -> Bool{
     

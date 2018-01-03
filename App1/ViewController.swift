@@ -17,15 +17,12 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var gameLabel: UILabel!
     
-    var currentHighScore = 1
-    var currentPressCount = 1
-    
     let defaults = UserDefaults.standard
-   
     
     override func viewDidLoad() {        
         super.viewDidLoad()
         
+        globalGameLabel = gameLabel
         
         // Do any additional setup after loading the view, typically from a nib.
         let lasthigh = defaults.integer(forKey: highscoreKey)
@@ -78,10 +75,14 @@ class ViewController: UIViewController {
         highscoreLabel.text = "\(text)"
     }
     
+    func clearGameLabel(){
+        currentPressCount = 1
+        updateGameLabel()
+    }
+    
     func actionPressed(){
         print("Tapped")
         currentPressCount+=1
-        score = currentPressCount
         updateGameLabel()
         if currentPressCount > currentHighScore{
             updateHighScoreLabel(currentPressCount)
