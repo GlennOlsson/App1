@@ -11,37 +11,34 @@ import Alamofire
 import UIKit
 import SwiftyJSON
 
-class HighscoreViewController: UIViewController, UIApplicationDelegate{
+class HighscoreViewController: UIViewController{
     
     let defaults = UserDefaults.standard
 	
     @IBOutlet weak var highscoreLabelStack: UIStackView!
 	
-	func applicationWillResignActive(_ application: UIApplication) {
-        print("RESIGN ACTIVE")
-    }
+    @IBOutlet weak var loadingIcon: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Loaded Highscore")
 //        updateHigh()
-        newStart()
     }
     
     override func viewWillAppear(_ animated: Bool){
         super.viewWillAppear(animated)
-		
-		
-		
-        updateHighscoreRequest()
+        
+        //Clearing stack before adding new content
+        while let subview = highscoreLabelStack.subviews.last {
+            subview.removeFromSuperview()
+        }
+        
+        loadingIcon.startAnimating()
+		updateHighscoreRequest()
     }
-    
-    @IBAction func unwindToMain(segue: UIStoryboardSegue) {
-    }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-         updateHighscoreRequest()
+//         updateHighscoreRequest()
     }
     
     override func didReceiveMemoryWarning() {
@@ -54,7 +51,7 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
         if let token = defaults.string(forKey: tokenKey){
             
         let requestJson: Parameters = [
-            "token": "\(String(describing: token))",
+            "token": "\(token)",
             "score": defaults.integer(forKey: highscoreKey)
         ]
         
@@ -95,15 +92,13 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
     }
 	func updateHighscore(highscoreObject: JSON){
 		
-		//Clearing stack before adding new content
-		while let subview = highscoreLabelStack.subviews.last {
-			subview.removeFromSuperview()
-		}
 		
 		let thisUserSpot = highscoreObject["thisUserSpot"].intValue
 		
 		let highscoreArray = highscoreObject["highscore"].arrayValue
 		
+        loadingIcon.stopAnimating()
+        
 		for var i in 0..<highscoreArray.count{
 			let thisObject = highscoreArray[i].dictionaryObject
 			let name = thisObject!["name"] as! String
@@ -115,7 +110,7 @@ class HighscoreViewController: UIViewController, UIApplicationDelegate{
 			//stack, which will then be added to the root stack
 			
 			let newStack = createStackAndLabels(name: name, score: score, highSpot: i+1, isThisUser: i == thisUserSpot)
-			
+            
 			highscoreLabelStack.addArrangedSubview(newStack)
 			
 			

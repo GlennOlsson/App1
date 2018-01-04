@@ -89,10 +89,10 @@ class InitialViewController: UIViewController {
                     //Go to main page, assign token value and save on
                     //device. Also make the bool value true
                     
-                    self.performSegue(withIdentifier: "initialToMain", sender: nil)
-                    
                     self.errorLabel.textColor = UIColor.green
                     self.errorLabel.text = "Success"
+                    
+                   self.performSegue(withIdentifier: "gotoGame", sender: nil)
                     
                 }
                 catch{

@@ -22,6 +22,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {        
         super.viewDidLoad()
         
+//        defaults.set(false, forKey: firstStartKey)
+//        defaults.set(1, forKey: highscoreKey)
+        
         globalGameLabel = gameLabel
         
         // Do any additional setup after loading the view, typically from a nib.
@@ -40,8 +43,16 @@ class ViewController: UIViewController {
             //First launch, must choose a nickname
             print("FIRST LAUNCH")
             
-            performSegue(withIdentifier: "startSegue", sender: nil)
+            DispatchQueue.main.async {
+                let storyboard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "Initial")
+                self.show(vc, sender: self)
+            }
+            
+            self.performSegue(withIdentifier: "startSegue", sender: nil)
         }
+        
+        newStart()
         
         if lasthigh>0{
             //Not nil, had highscore
@@ -60,6 +71,12 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
 //        updateGameLabel()
 //        updateHighScoreLabel(score: loadHighScore())
+    }
+    
+    override func viewWillDisappear(_ animated: Bool){
+        super.viewWillDisappear(animated)
+        clearGameLabel()
+        newStart()
     }
     
     override func didReceiveMemoryWarning() {
@@ -82,7 +99,7 @@ class ViewController: UIViewController {
     
     func actionPressed(){
         print("Tapped")
-        currentPressCount+=1
+        currentPressCount += 1
         updateGameLabel()
         if currentPressCount > currentHighScore{
             updateHighScoreLabel(currentPressCount)
