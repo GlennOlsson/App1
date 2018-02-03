@@ -143,8 +143,7 @@ class HighscoreViewController: UIViewController{
 		stack.axis = .horizontal
 		stack.distribution = .fill
 		stack.alignment = .fill
-		stack.spacing = 5
-		stack.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+		stack.spacing = 5		stack.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 		stack.setNeedsUpdateConstraints()
 		
 		let nameLabel = UILabel()
