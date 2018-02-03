@@ -16,7 +16,7 @@ let firstStartKey = "hasStarted"
 let highscoreKey = "highscore"
 let usernameKey = "username"
 
-let mainURL = "http://glennolsson.se/App1/api"
+let mainURL = "https://glennolsson.se/App1/api"
 
 var username: String = ""
 
